@@ -66,17 +66,17 @@ w = cos(RotationAngle / 2)
 
 因此，四元数实际上存储了一个旋转轴和一个旋转角度。这让旋转的组合变简单了。
 
-###解读四元数###
+### 解读四元数 ###
 
 四元数的形式当然不如欧拉角直观，不过还是能看懂的：xyz分量大致代表了各个轴上的旋转分量，而w=acos(旋转角度/2)。举个例子，假设你在调试器中看到了这样的值[ 0.7 0 0 0.7 ]。x=0.7，比y、z的大，因此主要是在绕X轴旋转；而2*acos(0.7) = 1.59弧度，所以旋转角度应该是90°。
 
 同理，[0 0 0 1] (w=1)表示旋转角度 = 2*acos(1) = 0，因此这是一个*单位四元数*（unit quaternion），表示没有旋转。
 
-###基本操作###
+### 基本操作 ###
 
 不必理解四元数的数学原理：这种表示方式太晦涩了，因此我们一般通过一些工具函数进行计算。如果对这些数学原理感兴趣，可以参考[实用工具和链接](http://www.opengl-tutorial.org/miscellaneous/useful-tools-links/)中的数学书籍。
 
-####怎样用C++创建四元数？####
+#### 怎样用C++创建四元数？ ####
 
 ```cpp
 // Don't forget to #include <glm/gtc/quaternion.hpp> and <glm/gtx/quaternion.hpp>
@@ -97,13 +97,13 @@ MyQuaternion = quat(EulerAngles);
 MyQuaternion = gtx::quaternion::angleAxis(degrees(RotationAngle), RotationAxis);
 ```
 
-####怎样用GLSL创建四元数？####
+#### 怎样用GLSL创建四元数？ ####
 
 不要在shader中创建四元数。应该把四元数转换为旋转矩阵，用于模型矩阵中。顶点会一如既往地随着MVP矩阵的变化而旋转。
 
 某些情况下，你可能确实需要在shader中使用四元数。例如，GPU骨骼动画。GLSL中没有四元数类型，但是可以将四元数存在vec4变量中，然后在shader中计算。
 
-####怎样把四元数转换为矩阵？####
+#### 怎样把四元数转换为矩阵？ ####
 
 ```cpp
 mat4 RotationMatrix = quaternion::toMat4(quaternion);
@@ -140,7 +140,7 @@ mat4 ModelMatrix = TranslationMatrix * RotationMatrix * ScaleMatrix;
 速查手册
 ------
 
-###怎样判断两个四元数是否相同？###
+### 怎样判断两个四元数是否相同？ ###
 
 向量点积是两向量夹角的余弦值。若该值为1，那么这两个向量同向。判断两个四元数是否相同的方法与之十分相似：
 
@@ -152,7 +152,7 @@ if ( abs(matching-1.0) < 0.001 ){
 ```
 由点积的acos值还可以得到q1和q2间的夹角。
 
-###怎样旋转一个点？###
+### 怎样旋转一个点？ ###
 
 方法如下：
 
@@ -166,7 +166,7 @@ rotated_point = orientation_quaternion *  point;
 rotated_point = origin + (orientation_quaternion * (point-origin));
 ```
 
-###怎样对两个四元数插值？###
+### 怎样对两个四元数插值？ ###
 
 SLERP意为球面线性插值（Spherical Linear intERPolation）、可以用GLM中的`mix`函数进行SLERP：
 
@@ -174,7 +174,7 @@ SLERP意为球面线性插值（Spherical Linear intERPolation）、可以用GLM
 glm::quat interpolatedquat = quaternion::mix(quat1, quat2, 0.5f); // or whatever factor
 ```
 
-###怎样累积两个旋转？###
+### 怎样累积两个旋转？ ###
 
 只需将两个四元数相乘即可。顺序和矩阵乘法一致。亦即逆序相乘：
 
@@ -182,7 +182,7 @@ glm::quat interpolatedquat = quaternion::mix(quat1, quat2, 0.5f); // or whatever
 quat combined_rotation = second_rotation * first_rotation;
 ```
 
-###怎样计算两向量之间的旋转？###
+### 怎样计算两向量之间的旋转？ ###
 
 （也就是说，四元数得把v1旋转到v2）
 
@@ -229,7 +229,7 @@ rotationAxis.z * invs
 ```
 （可在`common/quaternion_utils.cpp`中找到该函数）
 
-###我需要一个类似gluLookAt的函数。怎样旋转物体使之朝向某点？###
+### 我需要一个类似gluLookAt的函数。怎样旋转物体使之朝向某点？ ###
 
 调用`RotationBetweenVectors`函数！
 
@@ -265,7 +265,7 @@ quat targetOrientation = rot2 * rot1; // remember, in reverse order.
 
 （可在`common/quaternion_utils.cpp`中找到此函数。）
 
-###怎样使用LookAt且限制旋转速度？###
+### 怎样使用LookAt且限制旋转速度？ ###
 
 基本思想是采用SLERP（用`glm::mix`函数），但要控制插值的幅度，避免角度偏大。
 
@@ -324,7 +324,7 @@ CurrentOrientation = RotateTowards(CurrentOrientation, TargetOrientation, 3.14f 
 
 （可在`common/quaternion_utils.cpp`中找到此函数）
 
-###怎样……###
+### 怎样……###
 
 若有疑问，请通过e-mail联系我们。我们将把您的问题添加到此文中。
 
